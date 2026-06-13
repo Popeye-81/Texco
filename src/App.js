@@ -1,16 +1,23 @@
 import { useState } from 'react';
 import './App.css';
 
+import Dashboard from './components/Dashboard';
+import Employees from './components/Employees';
+import Reports from './components/Reports';
+import Settings from './components/Settings';
+
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [message, setMessage] = useState('');
+  const [activePage, setActivePage] = useState('dashboard');
 
   const handleLogin = () => {
     if (username === 'admin' && password === 'admin123') {
       setIsLoggedIn(true);
       setMessage('');
+      setActivePage('dashboard');
     } else {
       setMessage('Invalid Username or Password');
     }
@@ -21,19 +28,43 @@ function App() {
     setUsername('');
     setPassword('');
     setMessage('');
+    setActivePage('dashboard');
   };
 
-  // Dashboard View
+  const renderPage = () => {
+    switch (activePage) {
+      case 'employees':
+        return <Employees />;
+      case 'reports':
+        return <Reports />;
+      case 'settings':
+        return <Settings />;
+      default:
+        return <Dashboard />;
+    }
+  };
+
   if (isLoggedIn) {
     return (
       <div className="dashboard">
         <div className="sidebar">
           <h2>Texco</h2>
 
-          <button>Dashboard</button>
-          <button>Employee Management</button>
-          <button>Reports</button>
-          <button>Settings</button>
+          <button onClick={() => setActivePage('dashboard')}>
+            Dashboard
+          </button>
+
+          <button onClick={() => setActivePage('employees')}>
+            Employee Management
+          </button>
+
+          <button onClick={() => setActivePage('reports')}>
+            Reports
+          </button>
+
+          <button onClick={() => setActivePage('settings')}>
+            Settings
+          </button>
 
           <button onClick={handleLogout}>
             Logout
@@ -41,36 +72,12 @@ function App() {
         </div>
 
         <div className="main-content">
-          <h1>Welcome to Texco</h1>
-          <p>Select an option from the menu.</p>
-
-          <div className="dashboard-cards">
-            <div className="card">
-              <h3>Employees</h3>
-              <p>125</p>
-            </div>
-
-            <div className="card">
-              <h3>Reports</h3>
-              <p>18</p>
-            </div>
-
-            <div className="card">
-              <h3>Pending Tasks</h3>
-              <p>7</p>
-            </div>
-
-            <div className="card">
-              <h3>Settings</h3>
-              <p>Updated</p>
-            </div>
-          </div>
+          {renderPage()}
         </div>
       </div>
     );
   }
 
-  // Login View
   return (
     <div className="App">
       <div className="login-container">
