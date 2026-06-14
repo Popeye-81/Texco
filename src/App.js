@@ -16,6 +16,9 @@ import OrderFormat from './components/OrderFormat';
 
 import UserManagement from './components/UserManagement';
 
+// ✅ NEW: Approval Module
+import OrderApproval from './components/OrderApproval';
+
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -79,6 +82,10 @@ function App() {
       case 'order':
         return <OrderFormat />;
 
+      // ✅ NEW PAGE
+      case 'approval':
+        return <OrderApproval />;
+
       default:
         return <Dashboard />;
     }
@@ -124,106 +131,63 @@ function App() {
         <h2>Texco ERP</h2>
 
         {/* CORE MODULES */}
-        <button
-          onClick={() =>
-            setActivePage('dashboard')
-          }
-        >
+        <button onClick={() => setActivePage('dashboard')}>
           Dashboard
         </button>
 
-        <button
-          onClick={() =>
-            setActivePage('users')
-          }
-        >
+        <button onClick={() => setActivePage('users')}>
           User Management
         </button>
 
-        <button
-          onClick={() =>
-            setActivePage('employees')
-          }
-        >
+        <button onClick={() => setActivePage('employees')}>
           Employees
         </button>
 
-        <button
-          onClick={() =>
-            setActivePage('reports')
-          }
-        >
+        <button onClick={() => setActivePage('reports')}>
           Reports
         </button>
 
-        <button
-          onClick={() =>
-            setActivePage('settings')
-          }
-        >
+        <button onClick={() => setActivePage('settings')}>
           Settings
         </button>
 
         <hr />
 
         {/* SALES MODULES */}
-        <button
-          onClick={() =>
-            setActivePage('dealer')
-          }
-        >
+        <button onClick={() => setActivePage('dealer')}>
           Dealer & Retailer
         </button>
 
-        <button
-          onClick={() =>
-            setActivePage('ase')
-          }
-        >
+        <button onClick={() => setActivePage('ase')}>
           ASE Master
         </button>
 
-        <button
-          onClick={() =>
-            setActivePage('asm')
-          }
-        >
+        <button onClick={() => setActivePage('asm')}>
           ASM Master
         </button>
 
-        <button
-          onClick={() =>
-            setActivePage('sm')
-          }
-        >
+        <button onClick={() => setActivePage('sm')}>
           SM Master
         </button>
 
-        <button
-          onClick={() =>
-            setActivePage('state')
-          }
-        >
+        <button onClick={() => setActivePage('state')}>
           State Master
         </button>
 
         <hr />
 
         {/* ORDER MODULES */}
-        <button
-          onClick={() =>
-            setActivePage('product')
-          }
-        >
+        <button onClick={() => setActivePage('product')}>
           Product Master
         </button>
 
-        <button
-          onClick={() =>
-            setActivePage('order')
-          }
-        >
+        <button onClick={() => setActivePage('order')}>
           Order Format
+        </button>
+
+        {/* ✅ NEW BUTTON */}
+        <button onClick={() => setActivePage('approval')}>
+          Order Approval
         </button>
 
         <hr />
