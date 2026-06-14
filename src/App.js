@@ -17,7 +17,6 @@ import OrderApproval from './components/OrderApproval';
 
 import UserManagement from './components/UserManagement';
 
-// Role config
 import { ROLE_PERMISSIONS } from './config/roles';
 
 function App() {
@@ -27,32 +26,36 @@ function App() {
   const [message, setMessage] = useState('');
   const [activePage, setActivePage] = useState('dashboard');
 
-  // NEW: role system
   const [role, setRole] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Temporary users (later move to backend)
-  const users = [
-    { username: "cso1", password: "123", role: "CSO" },
-    { username: "ase1", password: "123", role: "ASE" },
-    { username: "sm1", password: "123", role: "SM" },
-    { username: "asm1", password: "123", role: "ASM" },
-    { username: "admin", password: "admin123", role: "ADMIN" },
-  ];
+  // 🔐 UPDATED LOGIN (JWT BACKEND)
+  const handleLogin = async () => {
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-  const handleLogin = () => {
-    const user = users.find(
-      (u) => u.username === username && u.password === password
-    );
+      const data = await res.json();
 
-    if (user) {
-      setIsLoggedIn(true);
-      setRole(user.role);
-      setCurrentUser(user);
-      setMessage('');
-      setActivePage('dashboard');
-    } else {
-      setMessage('Invalid Username or Password');
+      if (res.ok) {
+        // store token
+        localStorage.setItem("token", data.token);
+
+        // set user state
+        setRole(data.role);
+        setCurrentUser({ username: data.username, role: data.role });
+
+        setIsLoggedIn(true);
+        setActivePage("dashboard");
+        setMessage('');
+      } else {
+        setMessage("Invalid Username or Password");
+      }
+    } catch (error) {
+      setMessage("Server error. Please try again.");
     }
   };
 
@@ -60,10 +63,13 @@ function App() {
     setIsLoggedIn(false);
     setUsername('');
     setPassword('');
-    setMessage('');
-    setActivePage('dashboard');
     setRole('');
     setCurrentUser(null);
+    setActivePage('dashboard');
+    setMessage('');
+
+    // clear token
+    localStorage.removeItem("token");
   };
 
   const renderPage = () => {
@@ -136,7 +142,9 @@ function App() {
             Login
           </button>
 
-          {message && <p style={{ color: 'red' }}>{message}</p>}
+          {message && (
+            <p style={{ color: 'red' }}>{message}</p>
+          )}
         </div>
       </div>
     );
@@ -165,7 +173,7 @@ function App() {
 
         <hr />
 
-        {/* ORDER MODULES (ROLE BASED) */}
+        {/* ORDER MODULES (ROLE BASED UI) */}
         {ROLE_PERMISSIONS[role]?.createOrder && (
           <button onClick={() => setActivePage('product')}>
             Product Master

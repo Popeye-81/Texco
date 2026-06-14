@@ -11,19 +11,19 @@ export default function handler(req, res) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const allowedRoles = ["CSO", "ASE", "SM", "ASM", "ADMIN"];
+  // Only ASM + ADMIN can approve (you can change rule later)
+  const canApprove = ["ASM", "ADMIN"].includes(user.role);
 
-  if (!allowedRoles.includes(user.role)) {
-    return res.status(403).json({ message: "Not allowed" });
+  if (!canApprove) {
+    return res.status(403).json({ message: "Not allowed to approve" });
   }
 
-  const { products, totalValue } = req.body;
+  const { orderId } = req.body;
 
   return res.status(200).json({
-    message: "Order created",
-    createdBy: user.username,
+    message: "Order approved successfully",
+    orderId,
+    approvedBy: user.username,
     role: user.role,
-    products,
-    totalValue,
   });
 }

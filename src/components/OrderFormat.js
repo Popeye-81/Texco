@@ -1,46 +1,50 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
-const OrderFormat = () => {
-  const [products, setProducts] = useState([]);
+function OrderFormat() {
+  const [products, setProducts] = useState("");
   const [totalValue, setTotalValue] = useState("");
+  const [message, setMessage] = useState("");
 
-  const createOrder = async () => {
-    const payload = {
-      createdBy: "Soumya", // later: login user
-      role: "ASE",         // later: dynamic role
-      products,
-      totalValue,
-    };
+  const handleSubmit = async () => {
+    try {
+      const res = await fetch("/api/orders/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
 
-    const res = await fetch("/api/orders/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+          // 🔐 TOKEN ADDED HERE
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+        body: JSON.stringify({
+          products,
+          totalValue,
+        }),
+      });
 
-    const data = await res.json();
-    console.log("ORDER RESPONSE:", data);
+      const data = await res.json();
+
+      if (res.ok) {
+        setMessage("Order Created Successfully ✔");
+        setProducts("");
+        setTotalValue("");
+      } else {
+        setMessage(data.message || "Error creating order");
+      }
+    } catch (error) {
+      setMessage("Server error");
+    }
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Order Form</h2>
+    <div>
+      <h2>Order Creation</h2>
 
-      {/* TEMP INPUT (we will upgrade later) */}
-      <button
-        onClick={() =>
-          setProducts([
-            { name: "Product A", qty: 2 },
-            { name: "Product B", qty: 1 },
-          ])
-        }
-      >
-        Add Sample Products
-      </button>
-
-      <br /><br />
+      <input
+        type="text"
+        placeholder="Products"
+        value={products}
+        onChange={(e) => setProducts(e.target.value)}
+      />
 
       <input
         type="number"
@@ -49,13 +53,11 @@ const OrderFormat = () => {
         onChange={(e) => setTotalValue(e.target.value)}
       />
 
-      <br /><br />
+      <button onClick={handleSubmit}>Create Order</button>
 
-      <button onClick={createOrder}>
-        Submit Order
-      </button>
+      {message && <p>{message}</p>}
     </div>
   );
-};
+}
 
 export default OrderFormat;

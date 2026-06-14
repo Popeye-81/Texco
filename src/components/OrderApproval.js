@@ -1,70 +1,53 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 
-const OrderApproval = () => {
-  const [orders, setOrders] = useState([]);
+function OrderApproval() {
+  const [orderId, setOrderId] = useState("");
+  const [message, setMessage] = useState("");
 
-  // Fetch all orders
-  const fetchOrders = async () => {
-    const res = await fetch("/api/orders/list");
-    const data = await res.json();
-    setOrders(data.orders || []);
-  };
+  const handleApprove = async () => {
+    try {
+      const res = await fetch("/api/orders/approve", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+          // 🔐 TOKEN ADDED HERE
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+        body: JSON.stringify({
+          orderId,
+        }),
+      });
 
-  // Approve order
-  const approveOrder = async (orderId) => {
-    const res = await fetch("/api/orders/approve", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        orderId,
-        approvedBy: "ADMIN",
-        role: "ADMIN",
-      }),
-    });
+      const data = await res.json();
 
-    const data = await res.json();
-    console.log("APPROVED:", data);
-
-    fetchOrders();
+      if (res.ok) {
+        setMessage("Order Approved ✔");
+        setOrderId("");
+      } else {
+        setMessage(data.message || "Approval failed");
+      }
+    } catch (error) {
+      setMessage("Server error");
+    }
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Order Approval Dashboard</h2>
+    <div>
+      <h2>Order Approval</h2>
 
-      {orders.length === 0 && <p>No orders found</p>}
+      <input
+        type="text"
+        placeholder="Order ID"
+        value={orderId}
+        onChange={(e) => setOrderId(e.target.value)}
+      />
 
-      {orders.map((order) => (
-        <div
-          key={order.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "10px",
-            marginBottom: "10px",
-          }}
-        >
-          <p><b>Order ID:</b> {order.id}</p>
-          <p><b>Created By:</b> {order.createdBy}</p>
-          <p><b>Role:</b> {order.role}</p>
-          <p><b>Status:</b> {order.status}</p>
-          <p><b>Total:</b> ₹{order.totalValue}</p>
+      <button onClick={handleApprove}>Approve Order</button>
 
-          <button
-            onClick={() => approveOrder(order.id)}
-            disabled={order.status === "APPROVED"}
-          >
-            Approve
-          </button>
-        </div>
-      ))}
+      {message && <p>{message}</p>}
     </div>
   );
-};
+}
 
 export default OrderApproval;
