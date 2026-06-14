@@ -1,6 +1,12 @@
 import { useState } from 'react';
 
-function Dashboard({ supers, distributors, csos, retailers, mapping }) {
+function Dashboard({
+  supers = [],
+  distributors = [],
+  csos = [],
+  retailers = [],
+  mapping = []
+}) {
   const [selectedSuper, setSelectedSuper] = useState(null);
   const [selectedDistributor, setSelectedDistributor] = useState(null);
   const [selectedCSO, setSelectedCSO] = useState(null);
@@ -24,7 +30,7 @@ function Dashboard({ supers, distributors, csos, retailers, mapping }) {
               setSelectedDistributor(null);
               setSelectedCSO(null);
             }}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', marginBottom: '10px' }}
           >
             <b>{s.name}</b> ({s.code})
           </div>
@@ -36,18 +42,27 @@ function Dashboard({ supers, distributors, csos, retailers, mapping }) {
         <>
           <h3>Distributors</h3>
 
-          {distributors
-            .filter((d) => d.superId === selectedSuper)
-            .map((d) => (
-              <div
-                key={d.id}
-                className="card"
-                onClick={() => setSelectedDistributor(d.id)}
-                style={{ cursor: 'pointer' }}
-              >
-                {d.name} ({d.code})
-              </div>
-            ))}
+          {distributors.filter(
+            (d) => d.superId === selectedSuper
+          ).length === 0 ? (
+            <p>No Distributors Found</p>
+          ) : (
+            distributors
+              .filter((d) => d.superId === selectedSuper)
+              .map((d) => (
+                <div
+                  key={d.id}
+                  className="card"
+                  onClick={() => setSelectedDistributor(d.id)}
+                  style={{
+                    cursor: 'pointer',
+                    marginBottom: '10px'
+                  }}
+                >
+                  {d.name} ({d.code})
+                </div>
+              ))
+          )}
         </>
       )}
 
@@ -56,16 +71,23 @@ function Dashboard({ supers, distributors, csos, retailers, mapping }) {
         <>
           <h3>CSOs</h3>
 
-          {csos.map((c) => (
-            <div
-              key={c.id}
-              className="card"
-              onClick={() => setSelectedCSO(c.id)}
-              style={{ cursor: 'pointer' }}
-            >
-              {c.name} ({c.code})
-            </div>
-          ))}
+          {csos.length === 0 ? (
+            <p>No CSOs Found</p>
+          ) : (
+            csos.map((c) => (
+              <div
+                key={c.id}
+                className="card"
+                onClick={() => setSelectedCSO(c.id)}
+                style={{
+                  cursor: 'pointer',
+                  marginBottom: '10px'
+                }}
+              >
+                {c.name} ({c.code})
+              </div>
+            ))
+          )}
         </>
       )}
 
@@ -74,19 +96,31 @@ function Dashboard({ supers, distributors, csos, retailers, mapping }) {
         <>
           <h3>Retailers (Mapped)</h3>
 
-          {mapping
-            .filter((m) => m.csoId === selectedCSO)
-            .map((m) => {
-              const retailer = retailers.find(
-                (r) => r.id === m.retailerId
-              );
+          {mapping.filter(
+            (m) => m.csoId === selectedCSO
+          ).length === 0 ? (
+            <p>No Retailers Mapped</p>
+          ) : (
+            mapping
+              .filter((m) => m.csoId === selectedCSO)
+              .map((m) => {
+                const retailer = retailers.find(
+                  (r) => r.id === m.retailerId
+                );
 
-              return (
-                <div key={m.id} className="card">
-                  {retailer?.name} - {retailer?.city}
-                </div>
-              );
-            })}
+                return (
+                  <div
+                    key={m.id}
+                    className="card"
+                    style={{ marginBottom: '10px' }}
+                  >
+                    {retailer
+                      ? `${retailer.name} - ${retailer.city}`
+                      : 'Retailer Not Found'}
+                  </div>
+                );
+              })
+          )}
         </>
       )}
     </div>

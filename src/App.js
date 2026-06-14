@@ -1,36 +1,33 @@
 import { useState } from 'react';
 import './App.css';
 
-import SuperMaster from './components/SuperMaster';
-import DistributorMaster from './components/DistributorMaster';
-import CSOMaster from './components/CSOMaster';
-import RetailerMaster from './components/RetailerMaster';
-import Mapping from './components/Mapping';
 import Dashboard from './components/Dashboard';
+import Employees from './components/Employees';
+import Reports from './components/Reports';
+import Settings from './components/Settings';
+import DealerRetailer from './components/DealerRetailer';
+
+import ASEMaster from './components/ASEMaster';
+import ASMMaster from './components/ASMMaster';
+import SMMaster from './components/SMMaster';
+import StateMaster from './components/StateMaster';
+import ProductMaster from './components/ProductMaster';
+import OrderFormat from './components/OrderFormat';
+
+import UserManagement from './components/UserManagement';
 
 function App() {
-  // LOGIN STATE
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [message, setMessage] = useState('');
+  const [activePage, setActivePage] = useState('dashboard');
 
-  // NAVIGATION STATE
-  const [activeTab, setActiveTab] = useState('dashboard');
-
-  // ERP MASTER DATA
-  const [supers, setSupers] = useState([]);
-  const [distributors, setDistributors] = useState([]);
-  const [csos, setCsos] = useState([]);
-  const [retailers, setRetailers] = useState([]);
-  const [mapping, setMapping] = useState([]);
-
-  // LOGIN
   const handleLogin = () => {
     if (username === 'admin' && password === 'admin123') {
       setIsLoggedIn(true);
       setMessage('');
-      setActiveTab('dashboard');
+      setActivePage('dashboard');
     } else {
       setMessage('Invalid Username or Password');
     }
@@ -41,69 +38,52 @@ function App() {
     setUsername('');
     setPassword('');
     setMessage('');
-    setActiveTab('dashboard');
+    setActivePage('dashboard');
   };
 
-  // ROUTING ENGINE
   const renderPage = () => {
-    switch (activeTab) {
-      case 'super':
-        return (
-          <SuperMaster
-            supers={supers}
-            setSupers={setSupers}
-          />
-        );
+    switch (activePage) {
+      case 'dashboard':
+        return <Dashboard />;
 
-      case 'distributor':
-        return (
-          <DistributorMaster
-            distributors={distributors}
-            setDistributors={setDistributors}
-            supers={supers}
-          />
-        );
+      case 'users':
+        return <UserManagement />;
 
-      case 'cso':
-        return (
-          <CSOMaster
-            csos={csos}
-            setCsos={setCsos}
-          />
-        );
+      case 'employees':
+        return <Employees />;
 
-      case 'retailer':
-        return (
-          <RetailerMaster
-            retailers={retailers}
-            setRetailers={setRetailers}
-          />
-        );
+      case 'reports':
+        return <Reports />;
 
-      case 'mapping':
-        return (
-          <Mapping
-            csos={csos}
-            retailers={retailers}
-            mapping={mapping}
-            setMapping={setMapping}
-          />
-        );
+      case 'settings':
+        return <Settings />;
+
+      case 'dealer':
+        return <DealerRetailer />;
+
+      case 'ase':
+        return <ASEMaster />;
+
+      case 'asm':
+        return <ASMMaster />;
+
+      case 'sm':
+        return <SMMaster />;
+
+      case 'state':
+        return <StateMaster />;
+
+      case 'product':
+        return <ProductMaster />;
+
+      case 'order':
+        return <OrderFormat />;
 
       default:
-        return (
-          <Dashboard
-            supers={supers}
-            distributors={distributors}
-            csos={csos}
-            retailers={retailers}
-            mapping={mapping}
-          />
-        );
+        return <Dashboard />;
     }
   };
 
-  // LOGIN SCREEN
   if (!isLoggedIn) {
     return (
       <div className="App">
@@ -124,51 +104,135 @@ function App() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button onClick={handleLogin}>Login</button>
+          <button onClick={handleLogin}>
+            Login
+          </button>
 
-          {message && <p style={{ color: 'red' }}>{message}</p>}
+          {message && (
+            <p style={{ color: 'red' }}>
+              {message}
+            </p>
+          )}
         </div>
       </div>
     );
   }
 
-  // ERP MAIN UI
   return (
     <div className="dashboard">
-      {/* SIDEBAR */}
       <div className="sidebar">
         <h2>Texco ERP</h2>
 
-        <button onClick={() => setActiveTab('dashboard')}>
+        {/* CORE MODULES */}
+        <button
+          onClick={() =>
+            setActivePage('dashboard')
+          }
+        >
           Dashboard
         </button>
 
-        <button onClick={() => setActiveTab('super')}>
-          Super Master
+        <button
+          onClick={() =>
+            setActivePage('users')
+          }
+        >
+          User Management
         </button>
 
-        <button onClick={() => setActiveTab('distributor')}>
-          Distributor Master
+        <button
+          onClick={() =>
+            setActivePage('employees')
+          }
+        >
+          Employees
         </button>
 
-        <button onClick={() => setActiveTab('cso')}>
-          CSO Master
+        <button
+          onClick={() =>
+            setActivePage('reports')
+          }
+        >
+          Reports
         </button>
 
-        <button onClick={() => setActiveTab('retailer')}>
-          Retailer Master
+        <button
+          onClick={() =>
+            setActivePage('settings')
+          }
+        >
+          Settings
         </button>
 
-        <button onClick={() => setActiveTab('mapping')}>
-          Mapping
+        <hr />
+
+        {/* SALES MODULES */}
+        <button
+          onClick={() =>
+            setActivePage('dealer')
+          }
+        >
+          Dealer & Retailer
         </button>
+
+        <button
+          onClick={() =>
+            setActivePage('ase')
+          }
+        >
+          ASE Master
+        </button>
+
+        <button
+          onClick={() =>
+            setActivePage('asm')
+          }
+        >
+          ASM Master
+        </button>
+
+        <button
+          onClick={() =>
+            setActivePage('sm')
+          }
+        >
+          SM Master
+        </button>
+
+        <button
+          onClick={() =>
+            setActivePage('state')
+          }
+        >
+          State Master
+        </button>
+
+        <hr />
+
+        {/* ORDER MODULES */}
+        <button
+          onClick={() =>
+            setActivePage('product')
+          }
+        >
+          Product Master
+        </button>
+
+        <button
+          onClick={() =>
+            setActivePage('order')
+          }
+        >
+          Order Format
+        </button>
+
+        <hr />
 
         <button onClick={handleLogout}>
           Logout
         </button>
       </div>
 
-      {/* MAIN CONTENT */}
       <div className="main-content">
         {renderPage()}
       </div>
